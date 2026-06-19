@@ -308,8 +308,19 @@ def determine_affiliation(row, ut_variations):
     if row['first_author'] == row['last_author']:
         return 'single author'
 
-    first_affiliated = any(variation in (row['first_affiliation'] or '') for variation in ut_variations)
-    last_affiliated = any(variation in (row['last_affiliation'] or '') for variation in ut_variations)
+    #Note bug: or '' doesn't work for pandas NaN
+    #first_affiliated = any(variation in (row['first_affiliation'] or '') for variation in ut_variations)
+    #last_affiliated = any(variation in (row['last_affiliation'] or '') for variation in ut_variations)
+
+    first_affiliated = any(
+        variation in str(row['first_affiliation'])
+        for variation in ut_variations
+    )
+
+    last_affiliated = any(
+        variation in str(row['last_affiliation'])
+        for variation in ut_variations
+    )
 
     if first_affiliated and last_affiliated:
         return 'both lead and senior'
