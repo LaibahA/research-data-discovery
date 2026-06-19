@@ -655,6 +655,7 @@ if not load_previous_data and not load_previous_data_plus and not load_previous_
             datacite_new = pd.concat(dfs_to_concat, ignore_index=True)
         else:
             print('No repository DataFrames available to concatenate.\n')
+            datacite_new = pd.DataFrame(columns=['doi']) #Note, if dfs_to_concat is empty, datacite_new never exists
 
         print('Retrieving additional DataCite metadata for unmatched deposits\n')
         results = []
@@ -1787,9 +1788,9 @@ if ncbi_workflow:
     #select metadata assessment for titles
     ncbi_df_select['title_reformatted'] = ncbi_df_select['title'].str.replace('_', ' ') #gets around text linked by underscores counting as 1 word
     ncbi_df_select['title_reformatted'] = ncbi_df_select['title_reformatted'].str.lower()
-    ncbi_df_select[['total_word_count_title', 'descriptive_word_count_title']] = (ncbi_df_select['title_reformatted'].apply(lambda x: pd.Series(count_words(x, nondescriptive_words))))
-    ncbi_df_select['descriptive_word_count_title'] = ncbi_df_select.apply(adjust_descriptive_count, axis=1)
-    ncbi_df_select['nondescriptive_word_count_title'] = ncbi_df_select['total_word_count_title'] - ncbi_df_select['descriptive_word_count_title']
+    #ncbi_df_select[['total_word_count_title', 'descriptive_word_count_title']] = (ncbi_df_select['title_reformatted'].apply(lambda x: pd.Series(count_words(x, nondescriptive_words))))
+    #ncbi_df_select['descriptive_word_count_title'] = ncbi_df_select.apply(adjust_descriptive_count, axis=1)
+    #ncbi_df_select['nondescriptive_word_count_title'] = ncbi_df_select['total_word_count_title'] - ncbi_df_select['descriptive_word_count_title']
     ncbi_df_select['rights_standardized'] = 'Rights unclear'
     ncbi_df_select['repository2'] = 'NCBI'
     ncbi_df_select['uni_lead'] = 'Affiliated (authorship unclear)'    
