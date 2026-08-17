@@ -205,7 +205,7 @@ headers_dataverse = {
     'X-Dataverse-key': config['KEYS']['dataverseToken']
 }
 params_dataverse = {
-    'q': '10.18738/T8/',
+    'q': '"University at Buffalo"',
     #UT Austin dataverse, may contain non-UT affiliated objects, and UT-affiliated objects may be in other TDR installations
     #'subtree': 'utexas', 
     'type': 'dataset', #dataverse may also mint DOIs for files
@@ -217,8 +217,10 @@ params_dataverse = {
 params_zenodo = {
     'q': f'(creators.affiliation:({institution_query_small}) OR creators.name:({institution_query_small}) OR contributors.affiliation:({institution_query_small}) OR contributors.name:({institution_query_small})) AND {zenodo_resource_type}',
     'size': per_page_zenodo,
-    'access_token': config['KEYS']['zenodoToken']
+    #'access_token': config['KEYS']['zenodoToken']
 }
+if config['KEYS']['zenodoToken']:
+    params_zenodo['access_token'] = config['KEYS']['zenodoToken']
 
 #defining some metadata assessment objects
 ##assess 'descriptiveness of dataset title'
@@ -619,7 +621,8 @@ if not load_previous_data and not load_previous_data_plus and not load_previous_
             df_zenodo_datacite_joint['Match_entry'] = np.where(df_zenodo_datacite_joint['source_dc'].isnull(), 'Not matched', 'Matched')
             ##removing multiple DOIs in same 'lineage'
             df_zenodo_datacite_joint = df_zenodo_datacite_joint.sort_values(by=['doi'])
-            df_zenodo_datacite_joint_deduplicated = df_zenodo_datacite_joint.drop_duplicates(subset=['publicationDate_zen', 'description_zen'], keep='last') 
+            #print(df_zenodo_datacite_joint.columns.tolist())
+            df_zenodo_datacite_joint_deduplicated = df_zenodo_datacite_joint.drop_duplicates(subset=['publication_date_zen', 'description_zen'], keep='last') 
             ##one problematic dataset splits incorrectly when exported to CSV (conceptrecID = 616927)
             print('Counts of matches for DataCite into Zenodo\n')
             counts_zenodo_datacite = df_zenodo_datacite_joint_deduplicated['Match_entry'].value_counts()
@@ -633,7 +636,7 @@ if not load_previous_data and not load_previous_data_plus and not load_previous_
             df_datacite_zenodo_joint['Match_entry'] = np.where(df_datacite_zenodo_joint['source_zenodo'].isnull(), 'Not matched', 'Matched')
             ##removing multiple DOIs in same 'lineage'
             df_datacite_zenodo_joint = df_datacite_zenodo_joint.sort_values(by=['doi']) 
-            df_datacite_zenodo_joint_deduplicated = df_datacite_zenodo_joint.drop_duplicates(subset=['publicationDate_zen', 'description_zen'], keep='first') 
+            df_datacite_zenodo_joint_deduplicated = df_datacite_zenodo_joint.drop_duplicates(subset=['publication_date_zen', 'description_zen'], keep='first') 
             print('Counts of matches for Zenodo into DataCite\n')
             counts_datacite_zenodo = df_datacite_zenodo_joint_deduplicated['Match_entry'].value_counts()
             print(counts_datacite_zenodo, '\n')
